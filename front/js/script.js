@@ -167,7 +167,12 @@ function abrirFormulario(tipo) {
 }
 
 function fecharFormulario() {
-  const containers = ['formContainerAtivo','formContainerPassivo','formContainerDespesa','formContainerReceita'];
+  const containers = [
+    'formContainerAtivo',
+    'formContainerPassivo',
+    'formContainerDespesa',
+    'formContainerReceita',
+    'formContainerDeletar'];
   containers.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
   tipoAtual = null;
 }
@@ -240,121 +245,228 @@ document.addEventListener('submit', async function (event) {
 
     const containers = ['formContainerAtivo','formContainerPassivo','formContainerDespesa','formContainerReceita'];
     containers.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+    
+    if (typeof carregarLista === 'function') {
+        carregarLista(tipoAtual.toLowerCase(), 'lista-' + tipoAtual.toLowerCase());
+    }
+    
     tipoAtual = null;
   } catch (erro) {
     if (dadosDiv) dadosDiv.textContent = `❌ Erro: ${erro.message}`;
   }
 });
 
-// Adicione este Listener para carregar os itens quando o tipo mudar
-document.getElementById('tipoDeletar')?.addEventListener('change', async function(event) {
-    const tipoSelecionado = event.target.value;
-    const selectItens = document.getElementById('idDeletar');
+let deletarContexto = null;
+
+window.prepararDelecao = function(tipo, id, nome) {
+    deletarContexto = { tipo, id };
+    const modal = document.getElementById('formContainerDeletar');
+    const msg = document.getElementById('msgDeletarDireto');
     
-    // Reseta o select de itens
-    selectItens.innerHTML = '<option value="">Carregando...</option>';
-    selectItens.disabled = true;
-
-    if (!tipoSelecionado) {
-        selectItens.innerHTML = '<option value="">Selecione o tipo acima...</option>';
-        return;
+    if (modal && msg) {
+        msg.innerHTML = `Tem certeza que deseja excluir o item <strong>${nome}</strong>?`;
+        fecharFormulario();
+        modal.style.display = 'block';
     }
+};
 
-    try {
-        // Monta a URL: /api/v1/{tipo}/buscar
-        // Assumindo que API_BASE_URL já aponta para /api/v1 ou similar
-        const url = `${API_BASE_URL}/${tipoSelecionado}/buscar`;
-        
-        const response = await fetch(url);
-        
-        if (!response.ok) {
-            throw new Error('Erro ao buscar itens');
-        }
-
-        const listaItens = await response.json();
-
-        // Limpa o select
-        selectItens.innerHTML = '<option value="">-- Selecione o item --</option>';
-
-        if (listaItens.length === 0) {
-            const option = document.createElement('option');
-            option.text = "Nenhum item cadastrado neste tipo";
-            selectItens.add(option);
-        } else {
-            listaItens.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.id;
-                
-                // Tenta pegar o nome ou descricao, dependendo do objeto (Ativos usam 'nome', Despesas usam 'descricao')
-                const label = item.nome || item.descricao || `Item #${item.id}`;
-                
-                // Formata para mostrar: "ID - Nome"
-                option.text = `${item.id} - ${label}`;
-                selectItens.appendChild(option);
-            });
-            selectItens.disabled = false; // Habilita o select agora que tem dados
-        }
-
-    } catch (erro) {
-        console.error(erro);
-        selectItens.innerHTML = '<option value="">Erro ao carregar itens</option>';
-        document.getElementById('dados').innerHTML = `<span class="text-danger">Erro na busca: ${erro.message}</span>`;
-    }
-});
-
-document.getElementById('formDeletar')?.addEventListener('submit', async function(event) {
-    event.preventDefault();
-    
-    const formData = new FormData(event.target);
-    const tipo = formData.get('tipo');
-    const id = formData.get('id');
-
-    if (!tipo || !id) {
-        alert("Por favor, selecione o tipo e o ID.");
-        return;
-    }
-    if (!confirm(`Tem certeza que deseja EXCLUIR o item ${id} de ${tipo.toUpperCase()}?`)) {
-        return;
-    }
+window.confirmarDelecaoDireta = async function() {
+    if (!deletarContexto) return;
+    const { tipo, id } = deletarContexto;
     const dadosDiv = document.getElementById('dados');
+    if (dadosDiv) dadosDiv.textContent = 'Processando exclusão...';
+    
+    const resultadoPanel = document.getElementById('resultado');
+    if (resultadoPanel) resultadoPanel.classList.add('show');
     
     const url = `${API_BASE_URL}/${tipo}/deletar/${id}`; 
-
     try {
-        dadosDiv.textContent = 'Processando exclusão...';
-        
         const response = await fetch(url, {
             method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: { 'Content-Type': 'application/json' }
         });
 
         if (response.ok) {
-            dadosDiv.innerHTML = `<span class="text-success">✅ Registro ID ${id} excluído com sucesso!</span>`;
-            event.target.reset(); 
-            document.getElementById('idDeletar').innerHTML = '<option value="">Selecione o tipo acima...</option>';
-            document.getElementById('idDeletar').disabled = true;
-        } else {
-            let mensagemErro = "Erro desconhecido ao deletar.";
-            
-            try {
-                const erroData = await response.json();
-
-                if (erroData.message) {
-                    mensagemErro = erroData.message;
-                } else if (erroData.error) {
-                    mensagemErro = erroData.error;
-                }
-            } catch (e) {
-                const textoErro = await response.text();
-                mensagemErro = textoErro.length > 100 ? textoErro.substring(0, 100) + "..." : textoErro;
+            if (dadosDiv) dadosDiv.innerHTML = `<span class="text-success">✅ Registro removido com sucesso!</span>`;
+            if (typeof carregarTodasAsListas === 'function') {
+                carregarTodasAsListas();
             }
+            fecharFormulario();
+        } else {
+             let mensagemErro = "Erro desconhecido ao deletar.";
+             try {
+                 const erroData = await response.json();
+                 if (erroData.message) mensagemErro = erroData.message;
+                 else if (erroData.error) mensagemErro = erroData.error;
+             } catch(e) {}
+             throw new Error(mensagemErro);
+        }
+    } catch(erro) {
+        if (dadosDiv) dadosDiv.innerHTML = `<span class="text-danger">❌ ${erro.message}</span>`;
+    }
+};
 
-            throw new Error(mensagemErro);
+const ESTADO_PAGINACAO = {
+    ativos: { dados: [], atual: 1, limite: 4 },
+    passivos: { dados: [], atual: 1, limite: 4 },
+    despesas: { dados: [], atual: 1, limite: 4 },
+    receitas: { dados: [], atual: 1, limite: 4 }
+};
+
+window.mudarPagina = function(tipo, direcao) {
+    const st = ESTADO_PAGINACAO[tipo];
+    // Conta total baseado nos filtrados para não explodir max páginas ao pesquisar
+    const inputPesquisa = document.getElementById('pesquisa-' + tipo);
+    let dadosView = st.dados;
+    
+    if (inputPesquisa && inputPesquisa.value.trim() !== '') {
+        const t = inputPesquisa.value.trim().toLowerCase();
+        dadosView = st.dados.filter(item => {
+            const n = (item.nome || item.descricao || '').toLowerCase();
+            const c = (item.categoria || item.tipo || '').toLowerCase();
+            return n.includes(t) || c.includes(t);
+        });
+    }
+
+    const totalPaginas = Math.ceil(dadosView.length / st.limite);
+    let nova = st.atual + direcao;
+    if (nova >= 1 && nova <= totalPaginas) {
+        st.atual = nova;
+        renderizarPagina(tipo);
+    }
+};
+
+window.pesquisarEm = function(tipo) {
+    ESTADO_PAGINACAO[tipo].atual = 1; // Reseta a paginação numa nova pesquisa
+    renderizarPagina(tipo);
+};
+
+async function carregarLista(tipoEndpoint, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return; // Se não estiver na página certa (só na cadastros.html)
+    
+    container.innerHTML = '<div class="text-center p-3 text-muted"><i class="fa-solid fa-spinner fa-spin"></i> Carregando...</div>';
+    
+    try {
+        const url = `${API_BASE_URL}/${tipoEndpoint}/buscar`;
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error(`Erro ao buscar ${tipoEndpoint}`);
+        
+        const dados = await resp.json();
+        
+        ESTADO_PAGINACAO[tipoEndpoint].dados = dados || [];
+        ESTADO_PAGINACAO[tipoEndpoint].atual = 1;
+        
+        renderizarPagina(tipoEndpoint);
+        
+    } catch (error) {
+       console.error(error);
+       container.innerHTML = `<div class="text-danger p-2 text-center" style="font-size: 0.8rem;">Erro na busca.</div>`;
+    }
+}
+
+function renderizarPagina(tipoEndpoint) {
+    const containerId = 'lista-' + tipoEndpoint;
+    const pagContainerId = 'paginacao-' + tipoEndpoint;
+    const container = document.getElementById(containerId);
+    const pagContainer = document.getElementById(pagContainerId);
+    
+    if (!container) return;
+    
+    const st = ESTADO_PAGINACAO[tipoEndpoint];
+    let dados = st.dados;
+    
+    const inputPesquisa = document.getElementById('pesquisa-' + tipoEndpoint);
+    if (inputPesquisa && inputPesquisa.value.trim() !== '') {
+        const termo = inputPesquisa.value.trim().toLowerCase();
+        dados = dados.filter(item => {
+            const n = (item.nome || item.descricao || '').toLowerCase();
+            const c = (item.categoria || item.tipo || '').toLowerCase();
+            const formatada = prettifyLabel(item.categoria || item.tipo).toLowerCase();
+            return n.includes(termo) || c.includes(termo) || formatada.includes(termo);
+        });
+    }
+    
+    container.innerHTML = '';
+    
+    if (dados.length === 0) {
+        if (st.dados.length > 0) {
+            container.innerHTML = '<div class="text-center p-3 text-muted" style="font-size: 0.9rem;">Nenhum compatível com a pesquisa.</div>';
+        } else {
+            container.innerHTML = '<div class="text-center p-3 text-muted" style="font-size: 0.9rem;">Nenhum registro.</div>';
+        }
+        if(pagContainer) pagContainer.innerHTML = '';
+        return;
+    }
+    
+    // Calcula as fatias
+    const inicio = (st.atual - 1) * st.limite;
+    const fim = inicio + st.limite;
+    const itensPagina = dados.slice(inicio, fim);
+    
+    itensPagina.forEach(item => {
+        const nomeStr = item.nome || item.descricao || 'Sem Nome';
+        const catStr = item.categoria || item.tipo || '';
+
+        let iconClass = 'fa-solid fa-file-invoice';
+        let iconBoxStyle = 'background:#edf2f7; color:#4a5568;';
+        if(tipoEndpoint === 'ativos') {
+            iconClass = 'fa-solid fa-chart-simple';
+            iconBoxStyle = 'background:#ebf4ff; color:#4299e1;';
+        } else if(tipoEndpoint === 'passivos') {
+            iconClass = 'fa-solid fa-cash-register';
+            iconBoxStyle = 'background:#f0fff4; color:#48bb78;';
+        } else if(tipoEndpoint === 'despesas') {
+            iconClass = 'fa-solid fa-file-invoice-dollar';
+            iconBoxStyle = 'background:#fffff0; color:#ecc94b;';
+        } else if(tipoEndpoint === 'receitas') {
+            iconClass = 'fa-solid fa-arrow-trend-up';
+            iconBoxStyle = 'background:#fff5f5; color:#f56565;';
         }
 
-    } catch (erro) {
-        dadosDiv.innerHTML = `<span class="text-danger">❌ ${erro.message}</span>`;
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'list-item';
+        
+        itemDiv.innerHTML = `
+          <div class="item-icon" style="${iconBoxStyle}">
+            <i class="${iconClass}"></i>
+          </div>
+          <div class="item-details" style="flex: 2; padding-right: 10px; display: flex; align-items: center;">
+            <div class="item-name">${nomeStr}</div>
+          </div>
+          <div class="item-cat" style="flex: 1; text-align: right; font-weight: 600;">${prettifyLabel(catStr)}</div>
+          <div style="width: 28px; margin-left: 10px; display: flex; align-items: center; justify-content: center;">
+              <button class="btn-delete-item" onclick="prepararDelecao('${tipoEndpoint}', ${item.id}, '${nomeStr.replace(/'/g, "\\'")}')" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
+          </div>
+        `;
+        container.appendChild(itemDiv);
+    });
+    
+    // Atualiza paginação UI
+    if (pagContainer) {
+        const totalPaginas = Math.ceil(dados.length / st.limite);
+        if (totalPaginas <= 1) {
+            pagContainer.innerHTML = ''; // Não mostra paginação
+        } else {
+            pagContainer.innerHTML = `
+                <button class="page-btn" onclick="mudarPagina('${tipoEndpoint}', -1)"><i class="fa-solid fa-chevron-left"></i></button>
+                <button class="page-btn active">${st.atual}</button>
+                <span>de ${totalPaginas}</span>
+                <button class="page-btn" onclick="mudarPagina('${tipoEndpoint}', 1)"><i class="fa-solid fa-chevron-right"></i></button>
+            `;
+        }
     }
+}
+
+async function carregarTodasAsListas() {
+    await Promise.all([
+        carregarLista('ativos', 'lista-ativos'),
+        carregarLista('passivos', 'lista-passivos'),
+        carregarLista('despesas', 'lista-despesas'),
+        carregarLista('receitas', 'lista-receitas')
+    ]);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    carregarTodasAsListas();
 });

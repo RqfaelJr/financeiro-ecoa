@@ -5,21 +5,443 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sistema Financeiro - Contas</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Inter', sans-serif;
+      color: #333;
+    }
+    
+    /* Header */
+    .header-bar {
+      background: #fff;
+      border-bottom: 1px solid #eee;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .header-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0;
+      border-left: 2px solid #ddd;
+      padding-left: 15px;
+      color: #111;
+    }
+    .header-logo {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #4a5568;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .header-logo i {
+      color: #a0aec0;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: #6c757d;
+    }
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #4a5568;
+    }
+    
+    /* Top Action Cards */
+    .action-card {
+      background: #fff;
+      border: 1px solid #eaedf1;
+      border-radius: 12px;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex: 1;
+      text-align: left;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #2d3748;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .action-card:hover {
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      transform: translateY(-2px);
+    }
+    .icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+    .icon-blue { background: #ebf4ff; color: #4299e1; }
+    .icon-green { background: #f0fff4; color: #48bb78; }
+    .icon-yellow { background: #fffff0; color: #ecc94b; }
+    .icon-red { background: #fff5f5; color: #f56565; }
+
+    /* Columns sections */
+    .list-card {
+      background: #fff;
+      border: 1px solid #eaedf1;
+      border-radius: 12px;
+      padding: 20px;
+      height: 100%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .list-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #1a202c;
+    }
+    .search-input {
+      background: #f8f9fa;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 12px 8px 36px;
+      width: 100%;
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+    }
+    .search-container {
+      position: relative;
+    }
+    .search-container i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #a0aec0;
+    }
+    
+    /* Table header mimicking */
+    .list-header {
+      display: flex;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #4a5568;
+      padding: 8px 10px;
+      background: #f7fafc;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    
+    .list-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f2f5;
+    }
+    .list-item:last-child {
+      border-bottom: none;
+    }
+    .item-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      font-size: 0.9rem;
+    }
+    .item-details {
+      flex: 1;
+      min-width: 0;
+    }
+    .item-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #2d3748;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .item-sub {
+      font-size: 0.8rem;
+      color: #718096;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .item-cat {
+      width: 30%;
+      font-size: 0.85rem;
+      color: #4a5568;
+    }
+    .item-value {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #1a202c;
+      text-align: right;
+      padding-right: 10px;
+    }
+    .btn-delete-item {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: #fff5f5;
+      color: #e53e3e;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-delete-item:hover {
+      background: #fed7d7;
+    }
+    
+    /* Pagination */
+    .pagination-custom {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: #4a5568;
+    }
+    .page-btn {
+      width: 28px;
+      height: 28px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #4a5568;
+      cursor: pointer;
+    }
+    .page-btn.active {
+      background: #ebf4ff;
+      color: #3182ce;
+      border-color: #ebf4ff;
+    }
+
+    /* MAGIC: Turn the original popup form logic into central Modals without JS changes */
+    #formContainerAtivo, #formContainerPassivo, #formContainerDespesa, #formContainerReceita, #formContainerDeletar {
+      position: fixed !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      width: 90% !important;
+      max-width: 500px !important;
+      z-index: 1050 !important;
+      background: #fff !important;
+      border-radius: 12px !important;
+      box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+      border: 1px solid #e2e8f0 !important;
+    }
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.5);
+      z-index: 1040;
+      display: none;
+      backdrop-filter: blur(2px);
+    }
+    body:has(#formContainerAtivo[style*="display: block"]) .modal-overlay,
+    body:has(#formContainerPassivo[style*="display: block"]) .modal-overlay,
+    body:has(#formContainerDespesa[style*="display: block"]) .modal-overlay,
+    body:has(#formContainerReceita[style*="display: block"]) .modal-overlay,
+    body:has(#formContainerDeletar[style*="display: block"]) .modal-overlay {
+      display: block;
+    }
+    body:has(#formContainerAtivo[style*="display: block"]),
+    body:has(#formContainerPassivo[style*="display: block"]),
+    body:has(#formContainerDespesa[style*="display: block"]),
+    body:has(#formContainerReceita[style*="display: block"]),
+    body:has(#formContainerDeletar[style*="display: block"]) {
+      overflow: hidden;
+    }
+    .back-btn { color: #6c757d; text-decoration: none; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+    .back-btn:hover { color: #3182ce; }
+  </style>
 </head>
-<body class="bg-light">
-    <div class="d-flex justify-content-start mb-3 ms-3">
-      <a href="/index.html" class="btn btn-outline-secondary">← Voltar</a>
+<body>
+
+  <!-- Modal Overlay -->
+  <div class="modal-overlay"></div>
+
+  <!-- Header -->
+  <header class="header-bar">
+    <div class="header-left">
+      <a href="/index.html" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i> Voltar
+      </a>
+      <div class="header-logo" style="margin-left: 10px;">
+        <i class="fa-solid fa-layer-group" style="color: #3182ce;"></i>
+        Ecoa Financeiro
+      </div>
+      <h1 class="header-title">Painel de Cadastro</h1>
+    </div>
+  </header>
+
+  <div class="container-fluid p-4">
+    
+    <!-- Action Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-3">
+        <button class="action-card w-100 border-0" onclick="abrirFormulario('ativos')">
+          <div class="icon-box icon-blue">
+            <i class="fa-solid fa-chart-simple"></i>
+          </div>
+          Cadastrar Ativo
+        </button>
+      </div>
+      <div class="col-md-3">
+        <button class="action-card w-100 border-0" onclick="abrirFormulario('passivos')">
+          <div class="icon-box icon-green">
+            <i class="fa-solid fa-cash-register"></i>
+          </div>
+          Cadastrar Passivo
+        </button>
+      </div>
+      <div class="col-md-3">
+        <button class="action-card w-100 border-0" onclick="abrirFormulario('despesas')">
+          <div class="icon-box icon-yellow">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+          </div>
+          Cadastrar Despesa
+        </button>
+      </div>
+      <div class="col-md-3">
+        <button class="action-card w-100 border-0" onclick="abrirFormulario('receitas')">
+          <div class="icon-box icon-red">
+            <i class="fa-solid fa-arrow-trend-up"></i>
+          </div>
+          Cadastrar Receita
+        </button>
+      </div>
     </div>
 
-    <div class="d-flex justify-content-center gap-3 mb-4">
-      <button class="btn btn-primary" onclick="abrirFormulario('ativos')">Cadastrar Ativo</button>
-      <button class="btn btn-success" onclick="abrirFormulario('passivos')">Cadastrar Passivo</button>
-      <button class="btn btn-warning" onclick="abrirFormulario('despesas')">Cadastrar Despesa</button>
-      <button class="btn btn-danger" onclick="abrirFormulario('receitas')">Cadastrar Receita</button>
-      <button class="btn btn-outline-danger" onclick="abrirFormulario('deletar')">🗑️ Excluir Item</button>
+    <!-- Lists Area -->
+    <div class="row g-3">
+      <!-- Ativos -->
+      <div class="col-md-3">
+        <div class="list-card">
+          <h2 class="list-title">Ativos Registrados</h2>
+          <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="pesquisa-ativos" class="search-input" placeholder="Pesquisar..." onkeyup="pesquisarEm('ativos')">
+          </div>
+          
+          <div class="list-header">
+            <div style="flex: 2;">Nome/Descrição</div>
+            <div style="flex: 1; text-align: right;">Categoria</div>
+            <div style="width: 28px; margin-left: 10px;"></div>
+          </div>
+          
+          <div class="list-items-container" id="lista-ativos">
+            <!-- Items loaded via API -->
+          </div>
+          
+          <div class="pagination-custom" id="paginacao-ativos"></div>
+        </div>
+      </div>
+
+      <!-- Passivos -->
+      <div class="col-md-3">
+        <div class="list-card">
+          <h2 class="list-title">Passivos Registrados</h2>
+          <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="pesquisa-passivos" class="search-input" placeholder="Pesquisar..." onkeyup="pesquisarEm('passivos')">
+          </div>
+          
+          <div class="list-header">
+            <div style="flex: 2;">Nome/Descrição</div>
+            <div style="flex: 1; text-align: right;">Categoria</div>
+            <div style="width: 28px; margin-left: 10px;"></div>
+          </div>
+          
+          <div class="list-items-container" id="lista-passivos">
+            <!-- Items loaded via API -->
+          </div>
+          
+          <div class="pagination-custom" id="paginacao-passivos"></div>
+        </div>
+      </div>
+
+      <!-- Despesas -->
+      <div class="col-md-3">
+        <div class="list-card">
+          <h2 class="list-title">Despesas Registradas</h2>
+          <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="pesquisa-despesas" class="search-input" placeholder="Pesquisar..." onkeyup="pesquisarEm('despesas')">
+          </div>
+          
+          <div class="list-header">
+            <div style="flex: 2;">Nome/Descrição</div>
+            <div style="flex: 1; text-align: right;">Categoria</div>
+            <div style="width: 28px; margin-left: 10px;"></div>
+          </div>
+          
+          <div class="list-items-container" id="lista-despesas">
+            <!-- Items loaded via API -->
+          </div>
+          
+          <div class="pagination-custom" id="paginacao-despesas"></div>
+        </div>
+      </div>
+
+      <!-- Receitas -->
+      <div class="col-md-3">
+        <div class="list-card">
+          <h2 class="list-title">Receitas Registradas</h2>
+          <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="pesquisa-receitas" class="search-input" placeholder="Pesquisar..." onkeyup="pesquisarEm('receitas')">
+          </div>
+          
+          <div class="list-header">
+            <div style="flex: 2;">Nome/Descrição</div>
+            <div style="flex: 1; text-align: right;">Categoria</div>
+            <div style="width: 28px; margin-left: 10px;"></div>
+          </div>
+          
+          <div class="list-items-container" id="lista-receitas">
+            <!-- Items loaded via API -->
+          </div>
+          
+          <div class="pagination-custom" id="paginacao-receitas"></div>
+        </div>
+      </div>
+
     </div>
 
-    <div id="formContainerAtivo" class="card shadow-sm p-4" style="display: none;">
+  </div> <!-- End container -->
+
+  <!-- ALL EXISTING FORMS (Transformed exactly as they were to keep JS working) -->
+  
+  <div id="formContainerAtivo" style="display: none;">
+    <div class="p-4">
       <h4 id="formTituloAtivo" class="mb-3"></h4>
       <form id="formCadastroAtivo">
         <div class="mb-3">
@@ -41,12 +463,16 @@
           <label for="NomeAtivo" class="form-label">Nome</label>
           <input type="text" id="NomeAtivo" name="nome" class="form-control" required />
         </div>
-        <button type="submit" class="btn btn-dark">Salvar</button>
-        <button type="button" class="btn btn-secondary" onclick="fecharFormulario()">Cancelar</button>
+        <div class="d-flex gap-2 mt-4">
+          <button type="submit" class="btn btn-dark w-50">Salvar</button>
+          <button type="button" class="btn btn-secondary w-50" onclick="fecharFormulario()">Cancelar</button>
+        </div>
       </form>
     </div>
+  </div>
 
-    <div id="formContainerPassivo" class="card shadow-sm p-4" style="display: none;">
+  <div id="formContainerPassivo" style="display: none;">
+    <div class="p-4">
       <h4 id="formTituloPassivo" class="mb-3"></h4>
       <form id="formCadastroPassivo">
         <div class="mb-3">
@@ -67,12 +493,16 @@
           <label for="NomePassivo" class="form-label">Nome</label>
           <input type="text" id="NomePassivo" name="nome" class="form-control" required />
         </div>
-        <button type="submit" class="btn btn-dark">Salvar</button>
-        <button type="button" class="btn btn-secondary" onclick="fecharFormulario()">Cancelar</button>
+        <div class="d-flex gap-2 mt-4">
+          <button type="submit" class="btn btn-dark w-50">Salvar</button>
+          <button type="button" class="btn btn-secondary w-50" onclick="fecharFormulario()">Cancelar</button>
+        </div>
       </form>
     </div>
+  </div>
 
-    <div id="formContainerDespesa" class="card shadow-sm p-4" style="display: none;">
+  <div id="formContainerDespesa" style="display: none;">
+    <div class="p-4">
       <h4 id="formTituloDespesa" class="mb-3"></h4>
       <form id="formCadastroDespesa">
         <div class="mb-3">
@@ -88,12 +518,16 @@
           <label for="descricaoDespesa" class="form-label">Descrição</label>
           <input type="text" id="descricaoDespesa" name="descricao" class="form-control" required />
         </div>
-        <button type="submit" class="btn btn-dark">Salvar</button>
-        <button type="button" class="btn btn-secondary" onclick="fecharFormulario()">Cancelar</button>
+        <div class="d-flex gap-2 mt-4">
+          <button type="submit" class="btn btn-dark w-50">Salvar</button>
+          <button type="button" class="btn btn-secondary w-50" onclick="fecharFormulario()">Cancelar</button>
+        </div>
       </form>
     </div>
+  </div>
 
-    <div id="formContainerReceita" class="card shadow-sm p-4" style="display: none;">
+  <div id="formContainerReceita" style="display: none;">
+    <div class="p-4">
       <h4 id="formTituloReceita" class="mb-3"></h4>
       <form id="formCadastroReceita">
         <div class="mb-3">
@@ -110,45 +544,26 @@
           <label for="descricaoReceita" class="form-label">Descrição</label>
           <input type="text" id="descricaoReceita" name="descricao" class="form-control" required />
         </div>
-        <button type="submit" class="btn btn-dark">Salvar</button>
-        <button type="button" class="btn btn-secondary" onclick="fecharFormulario()">Cancelar</button>
+        <div class="d-flex gap-2 mt-4">
+          <button type="submit" class="btn btn-dark w-50">Salvar</button>
+          <button type="button" class="btn btn-secondary w-50" onclick="fecharFormulario()">Cancelar</button>
+        </div>
       </form>
     </div>
-
-    <div id="resultado" class="card mt-4 p-3 shadow-sm">
-      <h5 class="mb-3">📋 Resultado:</h5>
-      <pre id="dados" class="bg-light p-3 rounded"></pre>
-    </div>
   </div>
 
-  
-<div id="formContainerDeletar" class="card shadow-sm p-4 border-danger" style="display: none;">
-  <h4 class="mb-3 text-danger">Excluir Registro</h4>
-  <p class="text-muted">Selecione o tipo e informe o ID do item que deseja remover.</p>
-  
-  <form id="formDeletar">
-    <div class="mb-3">
-      <label for="tipoDeletar" class="form-label">Tipo do Item</label>
-      <select id="tipoDeletar" name="tipo" class="form-select" required>
-        <option value="">-- Selecione o Tipo --</option>
-        <option value="ativos">Ativo</option>
-        <option value="passivos">Passivo</option>
-        <option value="despesas">Despesa</option>
-        <option value="receitas">Receita</option>
-      </select>
+  <div id="formContainerDeletar" style="display: none;">
+    <div class="p-4 text-center">
+      <div class="mb-3 text-danger"><i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem;"></i></div>
+      <h4 class="mb-3 text-danger">Confirmação de Exclusão</h4>
+      <p id="msgDeletarDireto" class="text-muted mb-4">Tem certeza que deseja excluir este registro?</p>
+      
+      <div class="d-flex justify-content-center gap-2">
+        <button type="button" class="btn btn-danger w-50" onclick="confirmarDelecaoDireta()">Excluir</button>
+        <button type="button" class="btn btn-secondary w-50" onclick="fecharFormulario()">Voltar</button>
+      </div>
     </div>
-    
-    <div class="mb-3">
-    <label for="idDeletar" class="form-label">Selecione o Item para Excluir</label>
-    <select id="idDeletar" name="id" class="form-select" required disabled>
-      <option value="">Primeiro selecione o tipo acima...</option>
-    </select>
   </div>
-
-    <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
-    <button type="button" class="btn btn-secondary" onclick="fecharFormulario()">Cancelar</button>
-  </form>
-</div>
 
   <script src="/js/api.js"></script>
   <script src="/js/script.js"></script> 

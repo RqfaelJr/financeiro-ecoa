@@ -78,7 +78,7 @@ function renderPage() {
     tableBody.innerHTML = '';
 
     if (!pageItems.length) {
-        tableBody.innerHTML = `<tr><td colspan="6" class="text-center">Nenhum lançamento nesta página</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="5" class="text-center">Nenhum lançamento nesta página</td></tr>`;
         return;
     } 
 
@@ -103,7 +103,6 @@ function renderPage() {
         });
 
         tr.innerHTML = `
-            <td>${item.id ?? ''}</td>
             <td>${formatDateBR(item.data ?? item.createdAt ?? '')}</td>
             <td>${item.debito ?? ''}</td>
             <td>${item.credito ?? ''}</td>
@@ -117,7 +116,7 @@ function renderPage() {
             const hasDanger = flags.some(f => f.cls.includes('bg-danger'));
             tr.classList.add(hasDanger ? 'table-danger' : 'table-warning');
 
-            const descricaoCell = tr.children[4];
+            const descricaoCell = tr.children[3];
             descricaoCell.appendChild(flagContainer);
         }
 
@@ -161,7 +160,7 @@ async function loadLancamentos() {
         }
 
         if (!allData.length) {
-            tableBody.innerHTML = `<tr><td colspan="6" class="text-center">Nenhum lançamento encontrado</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="5" class="text-center">Nenhum lançamento encontrado</td></tr>`;
             clearStatus();
             return;
         }
@@ -171,11 +170,10 @@ async function loadLancamentos() {
         clearStatus();
     } catch (err) {
         setStatusError('Falha ao carregar lançamentos: ' + err.message);
-        tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Erro ao obter dados</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Erro ao obter dados</td></tr>`;
     }
 }
 
-document.getElementById('btnRefresh').addEventListener('click', loadLancamentos);
 
 loadLancamentos();
 
