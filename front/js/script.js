@@ -1,5 +1,5 @@
 console.log("ANTES DE TUDO");
-
+alert("SCRIPT EXECUTANDO");
 let tipoAtual = null;
 const categoriasPorTipoAtivo = {
   "DISPONIBILIDADE": ["DINHEIRO_CAIXA", "CONTA_CORRENTE", "CONTA_POUPANCA", "OUTROS"],
