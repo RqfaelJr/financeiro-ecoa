@@ -1,5 +1,3 @@
-console.log("ANTES DE TUDO");
-alert("SCRIPT EXECUTANDO");
 let tipoAtual = null;
 const categoriasPorTipoAtivo = {
   "DISPONIBILIDADE": ["DINHEIRO_CAIXA", "CONTA_CORRENTE", "CONTA_POUPANCA", "OUTROS"],
@@ -345,10 +343,8 @@ window.pesquisarEm = function(tipo) {
 
 async function carregarLista(tipoEndpoint, containerId) {
     const container = document.getElementById(containerId);
-    console.log("FUNÇÂO");
     if (!container) return; // Se não estiver na página certa (só na cadastros.html)
 
-    console.log("FUNÇÂO 2");
     
     container.innerHTML = '<div class="text-center p-3 text-muted"><i class="fa-solid fa-spinner fa-spin"></i> Carregando...</div>';
     

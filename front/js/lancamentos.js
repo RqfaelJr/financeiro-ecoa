@@ -270,3 +270,10 @@ if (modalEl) {
         populateAccountSelects();
     });
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('btnOpenCadastrar')
+      ?.addEventListener('click', () => {
+          populateAccountSelects();
+      });
+});
