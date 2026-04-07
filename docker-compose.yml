@@ -14,7 +14,7 @@ services:
 
   backend:
     build: ./financeiro
-    container_name: sistema-financeiro-backend
+    container_name: sistema-financeiro_ecoa-backend
     ports:
       - "8080:8080"
     depends_on:
@@ -27,7 +27,7 @@ services:
 
   frontend:
     build: ./front
-    container_name: sistema-financeiro-frontend
+    container_name: sistema-financeiro_ecoa-frontend
     ports:
       - "80:80"
     depends_on:
