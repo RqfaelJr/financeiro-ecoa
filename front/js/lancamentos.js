@@ -174,8 +174,9 @@ async function loadLancamentos() {
     }
 }
 
-
-loadLancamentos();
+document.addEventListener('DOMContentLoaded', () => {
+    loadLancamentos();
+});
 
 
 const formCadastrar = document.getElementById('formCadastrarLancamento');
