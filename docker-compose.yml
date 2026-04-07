@@ -3,7 +3,7 @@ services:
     image: postgres:15-alpine
     container_name: meu-postgres
     environment:
-      POSTGRES_DB: sistema_financeiro_ecoa         
+      POSTGRES_DB: financeiro_ecoa         
       POSTGRES_USER: postgres      
       POSTGRES_PASSWORD: 123
       TZ: America/Sao_Paulo
