@@ -20,7 +20,7 @@ services:
     depends_on:
       - db
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/sistema_financeiro_ecoa
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/financeiro_ecoa
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 123
       TZ: America/Sao_Paulo
