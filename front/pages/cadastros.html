@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,7 +14,7 @@
       font-family: 'Inter', sans-serif;
       color: #333;
     }
-    
+
     /* Header */
     .header-bar {
       background: #fff;
@@ -23,11 +24,13 @@
       align-items: center;
       justify-content: space-between;
     }
+
     .header-left {
       display: flex;
       align-items: center;
       gap: 20px;
     }
+
     .header-title {
       font-size: 1.1rem;
       font-weight: 600;
@@ -36,6 +39,7 @@
       padding-left: 15px;
       color: #111;
     }
+
     .header-logo {
       font-weight: 700;
       font-size: 1.1rem;
@@ -44,15 +48,18 @@
       align-items: center;
       gap: 8px;
     }
+
     .header-logo i {
       color: #a0aec0;
     }
+
     .header-right {
       display: flex;
       align-items: center;
       gap: 15px;
       color: #6c757d;
     }
+
     .user-avatar {
       width: 32px;
       height: 32px;
@@ -63,7 +70,7 @@
       justify-content: center;
       color: #4a5568;
     }
-    
+
     /* Top Action Cards */
     .action-card {
       background: #fff;
@@ -80,12 +87,14 @@
       font-weight: 600;
       font-size: 1rem;
       color: #2d3748;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
     }
+
     .action-card:hover {
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
       transform: translateY(-2px);
     }
+
     .icon-box {
       width: 48px;
       height: 48px;
@@ -95,10 +104,26 @@
       justify-content: center;
       font-size: 1.25rem;
     }
-    .icon-blue { background: #ebf4ff; color: #4299e1; }
-    .icon-green { background: #f0fff4; color: #48bb78; }
-    .icon-yellow { background: #fffff0; color: #ecc94b; }
-    .icon-red { background: #fff5f5; color: #f56565; }
+
+    .icon-blue {
+      background: #ebf4ff;
+      color: #4299e1;
+    }
+
+    .icon-green {
+      background: #f0fff4;
+      color: #48bb78;
+    }
+
+    .icon-yellow {
+      background: #fffff0;
+      color: #ecc94b;
+    }
+
+    .icon-red {
+      background: #fff5f5;
+      color: #f56565;
+    }
 
     /* Columns sections */
     .list-card {
@@ -107,14 +132,16 @@
       border-radius: 12px;
       padding: 20px;
       height: 100%;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
     }
+
     .list-title {
       font-size: 1.1rem;
       font-weight: 700;
       margin-bottom: 20px;
       color: #1a202c;
     }
+
     .search-input {
       background: #f8f9fa;
       border: 1px solid #e2e8f0;
@@ -124,9 +151,11 @@
       font-size: 0.9rem;
       margin-bottom: 15px;
     }
+
     .search-container {
       position: relative;
     }
+
     .search-container i {
       position: absolute;
       left: 12px;
@@ -134,7 +163,7 @@
       transform: translateY(-50%);
       color: #a0aec0;
     }
-    
+
     /* Table header mimicking */
     .list-header {
       display: flex;
@@ -146,16 +175,18 @@
       border-radius: 6px;
       margin-bottom: 10px;
     }
-    
+
     .list-item {
       display: flex;
       align-items: center;
       padding: 12px 0;
       border-bottom: 1px solid #f0f2f5;
     }
+
     .list-item:last-child {
       border-bottom: none;
     }
+
     .item-icon {
       width: 36px;
       height: 36px;
@@ -166,10 +197,12 @@
       margin-right: 12px;
       font-size: 0.9rem;
     }
+
     .item-details {
       flex: 1;
       min-width: 0;
     }
+
     .item-name {
       font-weight: 600;
       font-size: 0.9rem;
@@ -178,6 +211,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .item-sub {
       font-size: 0.8rem;
       color: #718096;
@@ -185,11 +219,13 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .item-cat {
       width: 30%;
       font-size: 0.85rem;
       color: #4a5568;
     }
+
     .item-value {
       font-weight: 600;
       font-size: 0.9rem;
@@ -197,6 +233,7 @@
       text-align: right;
       padding-right: 10px;
     }
+
     .btn-delete-item {
       width: 28px;
       height: 28px;
@@ -211,10 +248,11 @@
       cursor: pointer;
       transition: background 0.2s;
     }
+
     .btn-delete-item:hover {
       background: #fed7d7;
     }
-    
+
     /* Pagination */
     .pagination-custom {
       display: flex;
@@ -225,6 +263,7 @@
       font-size: 0.85rem;
       color: #4a5568;
     }
+
     .page-btn {
       width: 28px;
       height: 28px;
@@ -237,6 +276,7 @@
       color: #4a5568;
       cursor: pointer;
     }
+
     .page-btn.active {
       background: #ebf4ff;
       color: #3182ce;
@@ -244,7 +284,11 @@
     }
 
     /* MAGIC: Turn the original popup form logic into central Modals without JS changes */
-    #formContainerAtivo, #formContainerPassivo, #formContainerDespesa, #formContainerReceita, #formContainerDeletar {
+    #formContainerAtivo,
+    #formContainerPassivo,
+    #formContainerDespesa,
+    #formContainerReceita,
+    #formContainerDeletar {
       position: fixed !important;
       top: 50% !important;
       left: 50% !important;
@@ -254,17 +298,22 @@
       z-index: 1050 !important;
       background: #fff !important;
       border-radius: 12px !important;
-      box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+      box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
       border: 1px solid #e2e8f0 !important;
     }
+
     .modal-overlay {
       position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.5);
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
       z-index: 1040;
       display: none;
       backdrop-filter: blur(2px);
     }
+
     body:has(#formContainerAtivo[style*="display: block"]) .modal-overlay,
     body:has(#formContainerPassivo[style*="display: block"]) .modal-overlay,
     body:has(#formContainerDespesa[style*="display: block"]) .modal-overlay,
@@ -272,6 +321,7 @@
     body:has(#formContainerDeletar[style*="display: block"]) .modal-overlay {
       display: block;
     }
+
     body:has(#formContainerAtivo[style*="display: block"]),
     body:has(#formContainerPassivo[style*="display: block"]),
     body:has(#formContainerDespesa[style*="display: block"]),
@@ -279,10 +329,22 @@
     body:has(#formContainerDeletar[style*="display: block"]) {
       overflow: hidden;
     }
-    .back-btn { color: #6c757d; text-decoration: none; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
-    .back-btn:hover { color: #3182ce; }
+
+    .back-btn {
+      color: #6c757d;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
+
+    .back-btn:hover {
+      color: #3182ce;
+    }
   </style>
 </head>
+
 <body>
 
   <!-- Modal Overlay -->
@@ -303,7 +365,7 @@
   </header>
 
   <div class="container-fluid p-4">
-    
+
     <!-- Action Cards -->
     <div class="row g-3 mb-4">
       <div class="col-md-3">
@@ -348,19 +410,20 @@
           <h2 class="list-title">Ativos Registrados</h2>
           <div class="search-container">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="pesquisa-ativos" class="search-input" placeholder="Pesquisar..." onkeyup="pesquisarEm('ativos')">
+            <input type="text" id="pesquisa-ativos" class="search-input" placeholder="Pesquisar..."
+              onkeyup="pesquisarEm('ativos')">
           </div>
-          
+
           <div class="list-header">
             <div style="flex: 2;">Nome/Descrição</div>
             <div style="flex: 1; text-align: right;">Categoria</div>
             <div style="width: 28px; margin-left: 10px;"></div>
           </div>
-          
+
           <div class="list-items-container" id="lista-ativos">
             <!-- Items loaded via API -->
           </div>
-          
+
           <div class="pagination-custom" id="paginacao-ativos"></div>
         </div>
       </div>
@@ -371,19 +434,20 @@
           <h2 class="list-title">Passivos Registrados</h2>
           <div class="search-container">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="pesquisa-passivos" class="search-input" placeholder="Pesquisar..." onkeyup="pesquisarEm('passivos')">
+            <input type="text" id="pesquisa-passivos" class="search-input" placeholder="Pesquisar..."
+              onkeyup="pesquisarEm('passivos')">
           </div>
-          
+
           <div class="list-header">
             <div style="flex: 2;">Nome/Descrição</div>
             <div style="flex: 1; text-align: right;">Categoria</div>
             <div style="width: 28px; margin-left: 10px;"></div>
           </div>
-          
+
           <div class="list-items-container" id="lista-passivos">
             <!-- Items loaded via API -->
           </div>
-          
+
           <div class="pagination-custom" id="paginacao-passivos"></div>
         </div>
       </div>
@@ -394,19 +458,20 @@
           <h2 class="list-title">Despesas Registradas</h2>
           <div class="search-container">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="pesquisa-despesas" class="search-input" placeholder="Pesquisar..." onkeyup="pesquisarEm('despesas')">
+            <input type="text" id="pesquisa-despesas" class="search-input" placeholder="Pesquisar..."
+              onkeyup="pesquisarEm('despesas')">
           </div>
-          
+
           <div class="list-header">
             <div style="flex: 2;">Nome/Descrição</div>
             <div style="flex: 1; text-align: right;">Categoria</div>
             <div style="width: 28px; margin-left: 10px;"></div>
           </div>
-          
+
           <div class="list-items-container" id="lista-despesas">
             <!-- Items loaded via API -->
           </div>
-          
+
           <div class="pagination-custom" id="paginacao-despesas"></div>
         </div>
       </div>
@@ -417,19 +482,20 @@
           <h2 class="list-title">Receitas Registradas</h2>
           <div class="search-container">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="pesquisa-receitas" class="search-input" placeholder="Pesquisar..." onkeyup="pesquisarEm('receitas')">
+            <input type="text" id="pesquisa-receitas" class="search-input" placeholder="Pesquisar..."
+              onkeyup="pesquisarEm('receitas')">
           </div>
-          
+
           <div class="list-header">
             <div style="flex: 2;">Nome/Descrição</div>
             <div style="flex: 1; text-align: right;">Categoria</div>
             <div style="width: 28px; margin-left: 10px;"></div>
           </div>
-          
+
           <div class="list-items-container" id="lista-receitas">
             <!-- Items loaded via API -->
           </div>
-          
+
           <div class="pagination-custom" id="paginacao-receitas"></div>
         </div>
       </div>
@@ -439,19 +505,19 @@
   </div> <!-- End container -->
 
   <!-- ALL EXISTING FORMS (Transformed exactly as they were to keep JS working) -->
-  
+
   <div id="formContainerAtivo" style="display: none;">
     <div class="p-4">
       <h4 id="formTituloAtivo" class="mb-3"></h4>
       <form id="formCadastroAtivo">
         <div class="mb-3">
           <label for="TipoAtivo" class="form-label">Tipo do Ativo</label>
-            <select id="TipoAtivo" name="tipo" class="form-select" required>
-                <option value="">-- Selecione --</option>
-                <option value="DISPONIBILIDADE">Disponibilidade</option>
-                <option value="INVESTIMENTOS">Investimentos</option>
-                <option value="DIREITOS">Direitos</option>
-            </select>
+          <select id="TipoAtivo" name="tipo" class="form-select" required>
+            <option value="">-- Selecione --</option>
+            <option value="DISPONIBILIDADE">Disponibilidade</option>
+            <option value="INVESTIMENTOS">Investimentos</option>
+            <option value="DIREITOS">Direitos</option>
+          </select>
         </div>
         <div class="mb-3">
           <label for="CategoriaAtivo" class="form-label">Categoria do Ativo</label>
@@ -533,7 +599,7 @@
         <div class="mb-3">
           <label for="tipoReceita" class="form-label">Tipo da Receita</label>
           <select id="tipoReceita" name="tipo" class="form-select" required>
-          <option value="">-- Selecione --</option>
+            <option value="">-- Selecione --</option>
             <option value="SALARIO">Salário</option>
             <option value="RENDA_EXTRA">Renda Extra</option>
             <option value="INVESTIMENTOS">Investimentos</option>
@@ -557,7 +623,7 @@
       <div class="mb-3 text-danger"><i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem;"></i></div>
       <h4 class="mb-3 text-danger">Confirmação de Exclusão</h4>
       <p id="msgDeletarDireto" class="text-muted mb-4">Tem certeza que deseja excluir este registro?</p>
-      
+
       <div class="d-flex justify-content-center gap-2">
         <button type="button" class="btn btn-danger w-50" onclick="confirmarDelecaoDireta()">Excluir</button>
         <button type="button" class="btn btn-secondary w-50" onclick="fecharFormulario()">Voltar</button>
@@ -565,8 +631,9 @@
     </div>
   </div>
 
-  <script src="/js/api.js" defer></script>
-  <script src="/js/script.js" defer></script> 
-  <script src="/js/utils.js" defer></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/script.js"></script>
+  <script src="/js/utils.js"></script>
 </body>
+
 </html>
