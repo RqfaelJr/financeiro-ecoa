@@ -271,9 +271,10 @@ if (modalEl) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('btnOpenCadastrar')
-      ?.addEventListener('click', () => {
-          populateAccountSelects();
-      });
+document.addEventListener('click', function (e) {
+    const btn = e.target.closest('#btnOpenCadastrar');
+
+    if (btn) {
+        populateAccountSelects();
+    }
 });
