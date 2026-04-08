@@ -78,7 +78,7 @@ function renderPage() {
     tableBody.innerHTML = '';
 
     if (!pageItems.length) {
-        tableBody.innerHTML = `<tr><td colspan="5" class="text-center">Nenhum lançamento nesta página</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="6" class="text-center">Nenhum lançamento nesta página</td></tr>`;
         return;
     } 
 
@@ -110,6 +110,9 @@ function renderPage() {
                 <div>${descricaoText}</div>
             </td>
             <td class="text-end">${formatMoney(item.valor ?? item.amount ?? 0)}</td>
+            <td class="text-center" style="width: 80px;">
+                <button class="btn btn-sm btn-outline-danger btn-delete-item border-0" onclick="prepararExclusaoLancamento(${item.id})" title="Excluir"><i class="fa fa-trash"></i></button>
+            </td>
         `;
 
         if (flags.length > 0) {
@@ -160,7 +163,7 @@ async function loadLancamentos() {
         }
 
         if (!allData.length) {
-            tableBody.innerHTML = `<tr><td colspan="5" class="text-center">Nenhum lançamento encontrado</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="6" class="text-center">Nenhum lançamento encontrado</td></tr>`;
             clearStatus();
             return;
         }
@@ -170,7 +173,7 @@ async function loadLancamentos() {
         clearStatus();
     } catch (err) {
         setStatusError('Falha ao carregar lançamentos: ' + err.message);
-        tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Erro ao obter dados</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Erro ao obter dados</td></tr>`;
     }
 }
 
@@ -245,10 +248,17 @@ async function populateAccountSelects() {
     results.forEach((arr, idx) => {
         const resource = resourceNames[idx];
         arr.forEach(item => {
-            const id = item.id ?? item.codigo;
-            if (id === undefined || id === null) return;
-            const label = item.nome ?? item.descricao ?? item.tipo ?? String(id);
-            combined.push({ id: String(id), label: `${label} (${resource.replace(/s$/, '')})`, resource });
+            const id = item.id;
+            const label = item.nome;
+            const categoria = prettifyLabel(item.categoria);
+            let textoCompleto = '';
+
+            if (label == 'Capital Social') {
+                textoCompleto = label;
+            } else {
+                textoCompleto = `${label} (${categoria})`;
+            }
+            combined.push({ id: String(id), label: textoCompleto, resource });
         });
     });
 
@@ -265,13 +275,6 @@ async function populateAccountSelects() {
     });
 }
 
-const modalEl = document.getElementById('cadastrarModal');
-if (modalEl) {
-    modalEl.addEventListener('show.bs.modal', function () {
-        populateAccountSelects();
-    });
-}
-
 document.addEventListener('click', function (e) {
     const btn = e.target.closest('#btnOpenCadastrar');
 
@@ -279,3 +282,50 @@ document.addEventListener('click', function (e) {
         populateAccountSelects();
     }
 });
+
+let idLancamentoSelecionadoParaExclusao = null;
+
+function prepararExclusaoLancamento(id) {
+    idLancamentoSelecionadoParaExclusao = id;
+    
+    const item = allData.find(d => d.id === id);
+    if (item) {
+        document.getElementById('lblExcluirData').textContent = formatDateBR(item.data);
+        document.getElementById('lblExcluirDebito').textContent = item.debito;
+        document.getElementById('lblExcluirCredito').textContent = item.credito;
+        document.getElementById('lblExcluirValor').textContent = formatMoney(item.valor);
+    }
+    
+    const modalEl = document.getElementById('excluirLancamentoModal');
+    if (modalEl) {
+        const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modal.show();
+    }
+}
+
+async function confirmarExclusaoLancamento() {
+    if (!idLancamentoSelecionadoParaExclusao) return;
+    
+    const modalEl = document.getElementById('excluirLancamentoModal');
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    if(modal) modal.hide();
+    
+    setStatusLoading();
+    try {
+        const url = `${API_BASE_URL}/lancamentos/deletar/${idLancamentoSelecionadoParaExclusao}`;
+        const res = await fetch(url, { method: 'DELETE' });
+        
+        if (!res.ok) {
+           throw new Error(`Servidor retornou erro ${res.status}`);
+        }
+        
+        await loadLancamentos();
+        statusEl.innerHTML = `<div class="alert alert-success p-2">Lançamento excluído com sucesso!</div>`;
+        setTimeout(clearStatus, 3000);
+        
+    } catch(err) {
+        setStatusError("Falha ao excluir lançamento: " + err.message);
+    } finally {
+        idLancamentoSelecionadoParaExclusao = null;
+    }
+}
