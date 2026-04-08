@@ -10,56 +10,6 @@ const categoriasPorTipoPassivo = {
   "LONGO_PRAZO": ["FINANCIAMENTO_IMOBILIARIO", "FINANCIAMENTO_VEICULO", "OUTROS"]
 };
 
-const tokenToLabel = {
-  'DINHEIRO': 'Dinheiro',
-  'CAIXA': 'Caixa',
-  'CONTA': 'Conta',
-  'CORRENTE': 'Corrente',
-  'POUPANCA': 'Poupança',
-  'TESOURO': 'Tesouro',
-  'DIRETO': 'Direto',
-  'FUNDOS': 'Fundos',
-  'INVESTIMENTO': 'Investimento',
-  'INVESTIMENTOS': 'Investimentos',
-  'ACOES': 'Ações',
-  'IMOVEIS': 'Imóveis',
-  'VEICULOS': 'Veículos',
-  'ELETRONICOS': 'Eletrônicos',
-  'ASSINATURAS': 'Assinaturas',
-  'OUTROS': 'Outros',
-  'FINANCEIRO': 'Financeiro',
-  'TRIBUTARIO': 'Tributário',
-  'CUSTO': 'Custo',
-  'FIXO': 'Fixo',
-  'VARIAVEL': 'Variável',
-  'CUSTO_FIXO': 'Custo Fixo',
-  'CUSTO_VARIAVEL': 'Custo Variável',
-  'OPERACIONAL': 'Operacional',
-  'NAO': 'Não',
-  'NAO_OPERACIONAL': 'Não Operacional',
-  'DISPONIBILIDADE': 'Disponibilidade',
-  'DIREITOS': 'Direitos',
-  'CARTAO_CREDITO': 'Cartão Crédito',
-  'EMPRESTIMO': 'Empréstimo',
-  'BOLETOS/FATURAS': 'Boletos/Faturas',
-  'FINANCIAMENTO_IMOBILIARIO': 'Financiamento Imobiliário',
-  'FINANCIAMENTO_VEICULO': 'Financiamento Veículo'
-};
-
-function prettifyLabel(key) {
-  if (!key) return '';
-  if (tokenToLabel[key]) return tokenToLabel[key];
-
-  const parts = key.split('_');
-  const words = parts.map(part => {
-    const up = part.toUpperCase();
-    if (tokenToLabel[up]) return tokenToLabel[up];
-    const lower = up.toLowerCase();
-    return lower.charAt(0).toUpperCase() + lower.slice(1);
-  });
-  return words.join(' ');
-}
-
 function filtrarCategoriasAtivo(tipoSelecionado) {
   const select = document.getElementById('CategoriaAtivo');
   if (!select) return;
@@ -142,8 +92,7 @@ function abrirFormulario(tipo) {
   const tipoCap = tipo.charAt(0).toUpperCase() + tipo.slice(1);
   const tituloEl = document.getElementById(`formTitulo${tipoCap}`);
   if (tituloEl) tituloEl.textContent = `Cadastrar ${tipoCap}`;
-  const dadosEl = document.getElementById('dados');
-  if (dadosEl) dadosEl.textContent = '';
+  document.querySelectorAll('.alert-submit').forEach(el => el.style.display = 'none');
 
   if (tipoAtual && tipoAtual.toLowerCase() === 'ativos') {
     const tipoSelect = document.getElementById('TipoAtivo');
@@ -190,9 +139,16 @@ document.addEventListener('submit', async function (event) {
     else if (formId.includes('receita')) tipoAtual = 'receitas';
   }
 
+  // Prepara box de erro fixada no topo do form respectivo
+  let errorAlert = form.querySelector('.alert-submit');
+  if (!errorAlert) {
+      errorAlert = document.createElement('div');
+      errorAlert.className = 'alert alert-danger alert-submit p-2 mb-3 text-start shadow-sm';
+      errorAlert.style.display = 'none';
+      form.prepend(errorAlert);
+  }
+  errorAlert.style.display = 'none';
   
-
-  const dadosDiv = document.getElementById('dados');
   const baseUrl = `${API_BASE_URL}/${tipoAtual}/criar`;
 
   try {
@@ -237,11 +193,16 @@ document.addEventListener('submit', async function (event) {
     });
 
     if (!response.ok) {
-      throw new Error(`Erro ${response.status}: falha ao cadastrar ${tipoAtual}`);
+        let errorMsg = `Falha ao cadastrar ${tipoAtual} (Erro ${response.status})`;
+        try {
+            const erroData = await response.json();
+            if (erroData.message) errorMsg = erroData.message;
+            else if (erroData.error) errorMsg = erroData.error;
+        } catch(e) {}
+        throw new Error(errorMsg);
     }
 
     const data = await response.json();
-    if (dadosDiv) dadosDiv.textContent = JSON.stringify(data, null, 2);
 
     const containers = ['formContainerAtivo','formContainerPassivo','formContainerDespesa','formContainerReceita'];
     containers.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
@@ -252,7 +213,10 @@ document.addEventListener('submit', async function (event) {
     
     tipoAtual = null;
   } catch (erro) {
-    if (dadosDiv) dadosDiv.textContent = `❌ Erro: ${erro.message}`;
+    if (typeof errorAlert !== 'undefined' && errorAlert) {
+        errorAlert.innerHTML = `<i class="fa-solid fa-circle-exclamation me-2"></i> ${erro.message}`;
+        errorAlert.style.display = 'block';
+    }
   }
 });
 
@@ -262,6 +226,10 @@ window.prepararDelecao = function(tipo, id, nome) {
     deletarContexto = { tipo, id };
     const modal = document.getElementById('formContainerDeletar');
     const msg = document.getElementById('msgDeletarDireto');
+    
+    // Reseta alertas de erros antigos na modal
+    const errors = modal.querySelectorAll('.alert-submit');
+    errors.forEach(e => e.remove());
     
     if (modal && msg) {
         msg.innerHTML = `Tem certeza que deseja excluir o item <strong>${nome}</strong>?`;
@@ -273,11 +241,18 @@ window.prepararDelecao = function(tipo, id, nome) {
 window.confirmarDelecaoDireta = async function() {
     if (!deletarContexto) return;
     const { tipo, id } = deletarContexto;
-    const dadosDiv = document.getElementById('dados');
-    if (dadosDiv) dadosDiv.textContent = 'Processando exclusão...';
     
-    const resultadoPanel = document.getElementById('resultado');
-    if (resultadoPanel) resultadoPanel.classList.add('show');
+    const modal = document.getElementById('formContainerDeletar');
+    const msgEl = document.getElementById('msgDeletarDireto');
+    
+    let errorAlert = modal.querySelector('.alert-submit');
+    if (!errorAlert) {
+        errorAlert = document.createElement('div');
+        errorAlert.className = 'alert alert-danger alert-submit p-2 mb-3 text-start shadow-sm';
+        errorAlert.style.display = 'none';
+        msgEl.insertAdjacentElement('afterend', errorAlert);
+    }
+    errorAlert.style.display = 'none';
     
     const url = `${API_BASE_URL}/${tipo}/deletar/${id}`; 
     try {
@@ -287,7 +262,6 @@ window.confirmarDelecaoDireta = async function() {
         });
 
         if (response.ok) {
-            if (dadosDiv) dadosDiv.innerHTML = `<span class="text-success">✅ Registro removido com sucesso!</span>`;
             if (typeof carregarTodasAsListas === 'function') {
                 carregarTodasAsListas();
             }
@@ -302,7 +276,8 @@ window.confirmarDelecaoDireta = async function() {
              throw new Error(mensagemErro);
         }
     } catch(erro) {
-        if (dadosDiv) dadosDiv.innerHTML = `<span class="text-danger">❌ ${erro.message}</span>`;
+        errorAlert.innerHTML = `<i class="fa-solid fa-circle-exclamation me-2"></i> ${erro.message}`;
+        errorAlert.style.display = 'block';
     }
 };
 
