@@ -68,4 +68,16 @@ public class LancamentoController {
 
         return ResponseEntity.ok(new LancamentoResponse(lancamento, ativoNegativo, passivoNegativo, receitaNegativa, despesaNegativa, comparativoErrado));
     }
+
+    @Transactional
+    @DeleteMapping("/deletar/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+
+        if (!lancamentoRepository.existsById(id)) {
+            throw new RuntimeException("Lançamento não encontrado.");
+        }
+
+        lancamentoRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }

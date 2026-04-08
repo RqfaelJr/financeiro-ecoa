@@ -137,4 +137,11 @@ public interface LancamentoRepository extends JpaRepository<Lancamento, Long> {
     ORDER BY l.id DESC
 """)
     List<Lancamento> findAllOrdenado();
+
+    @Query("""
+    SELECT count(l) > 0
+    FROM Lancamento l
+    WHERE l.credito.id = :id OR l.debito.id = :id
+""")
+    boolean existsLancamentoByCreditoOrDebito(Long id);
 }

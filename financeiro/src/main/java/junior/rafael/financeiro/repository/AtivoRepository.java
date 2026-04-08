@@ -1,6 +1,7 @@
 package junior.rafael.financeiro.repository;
 
 import junior.rafael.financeiro.domain.ativo.Ativo;
+import junior.rafael.financeiro.domain.ativo.CategoriaAtivo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -11,4 +12,6 @@ public interface AtivoRepository extends JpaRepository<Ativo, Long> {
 
     @Query("SELECT a.id FROM Ativo a")
     List<Long> findAllIds();
+
+    boolean existsByNomeAndCategoria(String nome, CategoriaAtivo categoria);
 }

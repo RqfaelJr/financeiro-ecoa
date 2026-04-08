@@ -11,6 +11,6 @@ public class VerificaDisponibilidadeEmDeletar {
     private final LancamentoRepository lancamentoRepository;
 
     public boolean execute(Long id) {
-        return lancamentoRepository.existsById(id);
+        return !lancamentoRepository.existsLancamentoByCreditoOrDebito(id);
     }
 }

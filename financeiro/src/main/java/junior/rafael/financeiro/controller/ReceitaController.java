@@ -31,6 +31,11 @@ public class ReceitaController {
     @PostMapping("/criar")
     public ResponseEntity<ReceitaResponse> criar(@RequestBody ReceitaRequest request) {
         Receita receita = new Receita(request);
+
+        if (receitaRepository.existsByNomeAndTipo(request.nome(), request.tipo())) {
+            throw new RuntimeException("Não é possível criar a receita com o mesmo nome e tipo");
+        }
+
         receita = receitaRepository.save(receita);
         return ResponseEntity.ok(new ReceitaResponse(receita));
     }
@@ -39,7 +44,7 @@ public class ReceitaController {
     @DeleteMapping("/deletar/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
 
-        if (!verificaDisponibilidadeEmDeletar.execute(id)) {
+        if (verificaDisponibilidadeEmDeletar.execute(id)) {
             receitaRepository.deleteById(id);
             return ResponseEntity.noContent().build();
         }

@@ -39,6 +39,11 @@ public class AtivoController {
     public ResponseEntity<AtivoResponse> criar(@RequestBody AtivoRequest request) {
 
         Ativo ativo = new Ativo(request);
+
+        if (ativoRepository.existsByNomeAndCategoria(request.nome(), request.categoria())) {
+            throw new RuntimeException("Não é possível criar o ativo com o mesmo nome e categoria");
+        }
+
         ativo = ativoRepository.save(ativo);
 
         return ResponseEntity.ok(new AtivoResponse(ativo));
@@ -59,7 +64,7 @@ public class AtivoController {
     @DeleteMapping("/deletar/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
 
-        if (!verificaDisponibilidadeEmDeletar.execute(id)) {
+        if (verificaDisponibilidadeEmDeletar.execute(id)) {
             ativoRepository.deleteById(id);
             return ResponseEntity.noContent().build();
         }

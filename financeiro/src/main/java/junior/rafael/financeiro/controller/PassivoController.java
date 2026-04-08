@@ -35,6 +35,11 @@ public class PassivoController {
     @PostMapping("/criar")
     public ResponseEntity<PassivoResponse> criar(@RequestBody PassivoRequest request) {
         Passivo passivo = new Passivo(request);
+
+        if (passivoRepository.existsByNomeAndCategoria(request.nome(), request.categoria())) {
+            throw new RuntimeException("Não é possível criar o passivo com o mesmo nome e categoria");
+        }
+
         passivo = passivoRepository.save(passivo);
         return ResponseEntity.ok(new PassivoResponse(passivo));
     }
@@ -53,7 +58,7 @@ public class PassivoController {
     @DeleteMapping("/deletar/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
 
-        if (!verificaDisponibilidadeEmDeletar.execute(id)) {
+        if (verificaDisponibilidadeEmDeletar.execute(id)) {
             passivoRepository.deleteById(id);
             return ResponseEntity.noContent().build();
         }

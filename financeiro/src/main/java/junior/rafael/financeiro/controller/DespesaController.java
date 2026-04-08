@@ -30,6 +30,11 @@ public class DespesaController {
     @PostMapping("/criar")
     public ResponseEntity<DespesaResponse> criar(@RequestBody DespesaRequest request) {
         Despesa despesa = new Despesa(request);
+
+        if (despesaRepository.existsByNomeAndTipo(request.nome(), request.tipo())) {
+            throw new RuntimeException("Não é possível criar a despesa com o mesmo nome e tipo");
+        }
+
         despesa = despesaRepository.save(despesa);
         return ResponseEntity.ok(new DespesaResponse(despesa));
     }
@@ -38,7 +43,7 @@ public class DespesaController {
     @DeleteMapping("/deletar/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
 
-        if (!verificaDisponibilidadeEmDeletar.execute(id)) {
+        if (verificaDisponibilidadeEmDeletar.execute(id)) {
             despesaRepository.deleteById(id);
             return ResponseEntity.noContent().build();
         }
