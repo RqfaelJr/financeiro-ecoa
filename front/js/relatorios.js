@@ -74,12 +74,20 @@ function setupFormRedirect(formId, errorId, urlBuilderFn, startInputId = 'startD
         }
 
         const navUrl = urlBuilderFn({ start, end });
+        window.abrirModal = function(id) {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'flex';
+        };
+
+        window.fecharModal = function(id) {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        };
         
         try {
-            const modalEl = form.closest('.modal');
+            const modalEl = form.closest('.custom-modal-overlay');
             if (modalEl) {
-                const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-                modalInstance.hide();
+                modalEl.style.display = 'none';
             }
         } catch(e) { console.error(e); }
 
@@ -107,13 +115,20 @@ function setupFormRedirectSingleDate(formId, errorId, urlBuilderFn, dateInputId 
         const navUrl = urlBuilderFn({ date });
 
         try {
-            const modalEl = form.closest('.modal');
+            const modalEl = form.closest('.custom-modal-overlay');
             if (modalEl) {
-                const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-                modalInstance.hide();
+                modalEl.style.display = 'none';
             }
         } catch(e) { console.error(e); }
 
         window.location.href = navUrl;
     });
 }
+window.abrirModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'flex';
+};
+window.fecharModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+};

@@ -65,6 +65,33 @@
             font-weight: 500;
             line-height: 1.25;
         }
+
+        /* Custom Vanilla Modals */
+        .custom-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1050; display: none;
+            align-items: center; justify-content: center;
+        }
+        .custom-modal-content {
+            background: #fff; width: 100%; max-width: 500px;
+            border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+            display: flex; flex-direction: column; overflow: hidden;
+            margin: 0 15px;
+        }
+        .custom-modal-header {
+            padding: 15px 20px; border-bottom: 1px solid #dee2e6;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 1.25rem; font-weight: 500;
+        }
+        .custom-modal-body { padding: 20px; }
+        .custom-modal-footer {
+            padding: 15px 20px; border-top: 1px solid #dee2e6;
+            display: flex; justify-content: flex-end; gap: 10px;
+        }
+        .btn-close-custom {
+            background: none; border: none; font-size: 1.5rem; line-height: 1; color: #000; opacity: 0.5; cursor: pointer; padding: 0; margin: 0;
+        }
+        .btn-close-custom:hover { opacity: 1; }
     </style>
 </head>
 <body>
@@ -80,151 +107,144 @@
     </header>
 
     <div class="cards-container">
-        <div class="report-card" data-bs-toggle="modal" data-bs-target="#periodoModal">
+        <div class="report-card" onclick="abrirModal('periodoModal')">
             <div class="report-icon"><i class="fa-solid fa-scale-balanced"></i></div>
             <div class="report-text">Balanço<br>Patrimonial</div>
         </div>
 
-        <div class="report-card" data-bs-toggle="modal" data-bs-target="#razaoModal">
+        <div class="report-card" onclick="abrirModal('razaoModal')">
             <div class="report-icon"><i class="fa-solid fa-book-open"></i></div>
             <div class="report-text">Razão</div>
         </div>
 
-        <div class="report-card" data-bs-toggle="modal" data-bs-target="#dreModal">
+        <div class="report-card" onclick="abrirModal('dreModal')">
             <div class="report-icon"><i class="fa-solid fa-chart-pie"></i></div>
             <div class="report-text">DRE</div>
         </div>
 
-        <div class="report-card" data-bs-toggle="modal" data-bs-target="#balanceteModal">
+        <div class="report-card" onclick="abrirModal('balanceteModal')">
             <div class="report-icon"><i class="fa-solid fa-table-cells"></i></div>
             <div class="report-text">Balancete</div>
         </div>
     </div>
 
-    <div class="modal fade" id="periodoModal" tabindex="-1" aria-labelledby="periodoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="periodoModalLabel">Selecionar período (Balanço)</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                </div>
-                <form id="periodoForm">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="startDate" class="form-label">Data</label>
-                            <input type="date" id="date" name="date" class="form-control" required>
-                        </div>
-                        <div id="periodoError" class="text-danger small"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Gerar relatório</button>
-                    </div>
-                </form>
+    <!-- Modais Vanilla -->
+    <div class="custom-modal-overlay" id="periodoModal">
+        <div class="custom-modal-content">
+            <div class="custom-modal-header">
+                <div>Selecionar período (Balanço)</div>
+                <button type="button" class="btn-close-custom" onclick="fecharModal('periodoModal')">&times;</button>
             </div>
+            <form id="periodoForm">
+                <div class="custom-modal-body">
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Data</label>
+                        <input type="date" id="date" name="date" class="form-control" required>
+                    </div>
+                    <div id="periodoError" class="text-danger small"></div>
+                </div>
+                <div class="custom-modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="fecharModal('periodoModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Gerar relatório</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <div class="modal fade" id="razaoModal" tabindex="-1" aria-labelledby="razaoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="razaoModalLabel">Razão - Selecionar conta e período</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                </div>
-                <form id="razaoForm">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="tipoConta" class="form-label">Tipo</label>
-                            <select id="tipoConta" class="form-select" required>
-                                <option value="" selected disabled>Selecione</option>
-                                <option value="ativos">Ativos</option>
-                                <option value="passivos">Passivos</option>
-                                <option value="despesas">Despesas</option>
-                                <option value="receitas">Receitas</option>
-                                <option value="patrimonios-liquidos">Patrimônio Líquido</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="contaSelect" class="form-label">Conta</label>
-                            <select id="contaSelect" class="form-select" required disabled>
-                                <option value="" selected>Selecione o tipo primeiro</option>
-                            </select>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-6">
-                                <label for="startDateRazao" class="form-label">Data início</label>
-                                <input type="date" id="startDateRazao" class="form-control" required>
-                            </div>
-                            <div class="col-6">
-                                <label for="endDateRazao" class="form-label">Data fim</label>
-                                <input type="date" id="endDateRazao" class="form-control" required>
-                            </div>
-                        </div>
-                        <div id="razaoError" class="text-danger small mt-2"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Gerar razão</button>
-                    </div>
-                </form>
+    <div class="custom-modal-overlay" id="razaoModal">
+        <div class="custom-modal-content">
+            <div class="custom-modal-header">
+                <div>Razão - Selecionar conta e período</div>
+                <button type="button" class="btn-close-custom" onclick="fecharModal('razaoModal')">&times;</button>
             </div>
+            <form id="razaoForm">
+                <div class="custom-modal-body">
+                    <div class="mb-3">
+                        <label for="tipoConta" class="form-label">Tipo</label>
+                        <select id="tipoConta" class="form-select" required>
+                            <option value="" selected disabled>Selecione</option>
+                            <option value="ativos">Ativos</option>
+                            <option value="passivos">Passivos</option>
+                            <option value="despesas">Despesas</option>
+                            <option value="receitas">Receitas</option>
+                            <option value="patrimonios-liquidos">Patrimônio Líquido</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contaSelect" class="form-label">Conta</label>
+                        <select id="contaSelect" class="form-select" required disabled>
+                            <option value="" selected>Selecione o tipo primeiro</option>
+                        </select>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label for="startDateRazao" class="form-label">Data início</label>
+                            <input type="date" id="startDateRazao" class="form-control" required>
+                        </div>
+                        <div class="col-6">
+                            <label for="endDateRazao" class="form-label">Data fim</label>
+                            <input type="date" id="endDateRazao" class="form-control" required>
+                        </div>
+                    </div>
+                    <div id="razaoError" class="text-danger small mt-2"></div>
+                </div>
+                <div class="custom-modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="fecharModal('razaoModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Gerar razão</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <div class="modal fade" id="dreModal" tabindex="-1" aria-labelledby="dreModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="dreModalLabel">DRE - Selecionar período</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                </div>
-                <form id="dreForm">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="startDateDRE" class="form-label">Data início</label>
-                            <input type="date" id="startDateDRE" name="startDateDRE" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="endDateDRE" class="form-label">Data fim</label>
-                            <input type="date" id="endDateDRE" name="endDateDRE" class="form-control" required>
-                        </div>
-                        <div id="dreError" class="text-danger small"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Gerar DRE</button>
-                    </div>
-                </form>
+    <div class="custom-modal-overlay" id="dreModal">
+        <div class="custom-modal-content">
+            <div class="custom-modal-header">
+                <div>DRE - Selecionar período</div>
+                <button type="button" class="btn-close-custom" onclick="fecharModal('dreModal')">&times;</button>
             </div>
+            <form id="dreForm">
+                <div class="custom-modal-body">
+                    <div class="mb-3">
+                        <label for="startDateDRE" class="form-label">Data início</label>
+                        <input type="date" id="startDateDRE" name="startDateDRE" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="endDateDRE" class="form-label">Data fim</label>
+                        <input type="date" id="endDateDRE" name="endDateDRE" class="form-control" required>
+                    </div>
+                    <div id="dreError" class="text-danger small"></div>
+                </div>
+                <div class="custom-modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="fecharModal('dreModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Gerar DRE</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <div class="modal fade" id="balanceteModal" tabindex="-1" aria-labelledby="balanceteModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="balanceteModalLabel">Balancete - Selecionar período</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                </div>
-                <form id="balanceteForm">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="startDateBalancete" class="form-label">Data início</label>
-                            <input type="date" id="startDateBalancete" name="startDateBalancete" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="endDateBalancete" class="form-label">Data fim</label>
-                            <input type="date" id="endDateBalancete" name="endDateBalancete" class="form-control" required>
-                        </div>
-                        <div id="balanceteError" class="text-danger small"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Gerar Balancete</button>
-                    </div>
-                </form>
+    <div class="custom-modal-overlay" id="balanceteModal">
+        <div class="custom-modal-content">
+            <div class="custom-modal-header">
+                <div>Balancete - Selecionar período</div>
+                <button type="button" class="btn-close-custom" onclick="fecharModal('balanceteModal')">&times;</button>
             </div>
+            <form id="balanceteForm">
+                <div class="custom-modal-body">
+                    <div class="mb-3">
+                        <label for="startDateBalancete" class="form-label">Data início</label>
+                        <input type="date" id="startDateBalancete" name="startDateBalancete" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="endDateBalancete" class="form-label">Data fim</label>
+                        <input type="date" id="endDateBalancete" name="endDateBalancete" class="form-control" required>
+                    </div>
+                    <div id="balanceteError" class="text-danger small"></div>
+                </div>
+                <div class="custom-modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="fecharModal('balanceteModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Gerar Balancete</button>
+                </div>
+            </form>
         </div>
     </div>
 

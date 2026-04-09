@@ -1,9 +1,13 @@
+console.log("balancopatrimonial.js carregado");
+
 document.addEventListener('DOMContentLoaded', function() {
     
+    console.log("DOM carregado");
 
     const date = getQueryParam('date');
 
     if (!date) {
+        console.log("Data não informada.");
         alert("Data não informada.");
         return;
     }
