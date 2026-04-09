@@ -17,15 +17,32 @@ document.addEventListener('DOMContentLoaded', function() {
     const passivoUrl = `${API_BASE_URL}/passivos/buscar/balanco-patrimonial/${date}`;
     const patrimonioUrl = `${API_BASE_URL}/patrimonios-liquidos/buscar/balanco-patrimonial/${date}`;
 
-    Promise.all([
-        fetch(ativoUrl).then(r => r.ok ? r.json() : []),
-        fetch(passivoUrl).then(r => r.ok ? r.json() : []),
-        fetch(patrimonioUrl).then(r => r.ok ? r.json() : [])
-    ]).then(([ativos, passivos, patrimonios]) => {
-        renderAtivos(ativos);
-        renderPassivos(passivos);
-        renderPatrimonio(patrimonios);
-    });
+    const setLoaderErros = (msg) => {
+        document.getElementById('ativosTbody').innerHTML = `<tr><td colspan="2" class="text-danger">${msg}</td></tr>`;
+        document.getElementById('passivosTbody').innerHTML = `<tr><td colspan="2" class="text-danger">${msg}</td></tr>`;
+        document.getElementById('patrimonioTbody').innerHTML = `<tr><td colspan="2" class="text-danger">${msg}</td></tr>`;
+    };
+
+    (async () => {
+        try {
+            const [resAtivo, resPassivo, resPatrim] = await Promise.all([
+                fetch(ativoUrl),
+                fetch(passivoUrl),
+                fetch(patrimonioUrl)
+            ]);
+
+            const ativos = resAtivo.ok ? await resAtivo.json() : [];
+            const passivos = resPassivo.ok ? await resPassivo.json() : [];
+            const patrimonios = resPatrim.ok ? await resPatrim.json() : [];
+
+            renderAtivos(ativos);
+            renderPassivos(passivos);
+            renderPatrimonio(patrimonios);
+        } catch (erro) {
+            console.error("Falha ao buscar Balanço:", erro);
+            setLoaderErros(`Falha de conexão com a API: ${erro.message}`);
+        }
+    })();
 
     const btnExport = document.getElementById('btnExport');
         if (btnExport) {

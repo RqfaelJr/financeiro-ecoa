@@ -73,13 +73,17 @@ function setupFormRedirect(formId, errorId, urlBuilderFn, startInputId = 'startD
             return;
         }
 
-        const modalEl = form.closest('.modal');
-        if (modalEl) {
-            const modalInstance = bootstrap.Modal.getInstance(modalEl);
-            if(modalInstance) modalInstance.hide();
-        }
+        const navUrl = urlBuilderFn({ start, end });
+        
+        try {
+            const modalEl = form.closest('.modal');
+            if (modalEl) {
+                const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                modalInstance.hide();
+            }
+        } catch(e) { console.error(e); }
 
-        window.location.href = urlBuilderFn({ start, end });
+        window.location.href = navUrl;
     });
 }
 
@@ -100,12 +104,16 @@ function setupFormRedirectSingleDate(formId, errorId, urlBuilderFn, dateInputId 
             return;
         }
 
-        const modalEl = form.closest('.modal');
-        if (modalEl) {
-            const modalInstance = bootstrap.Modal.getInstance(modalEl);
-            if (modalInstance) modalInstance.hide();
-        }
+        const navUrl = urlBuilderFn({ date });
 
-        window.location.href = urlBuilderFn({ date });
+        try {
+            const modalEl = form.closest('.modal');
+            if (modalEl) {
+                const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                modalInstance.hide();
+            }
+        } catch(e) { console.error(e); }
+
+        window.location.href = navUrl;
     });
 }
